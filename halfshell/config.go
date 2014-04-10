@@ -96,7 +96,10 @@ func newConfigParser(filepath string) *configParser {
 	}
 	decoder := json.NewDecoder(file)
 	parser := configParser{filepath: filepath}
-	decoder.Decode(&parser.data)
+	err = decoder.Decode(&parser.data)
+	if err != nil {
+		panic("Could not parse JSON configuration")
+	}
 	return &parser
 }
 
