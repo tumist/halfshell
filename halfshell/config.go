@@ -55,12 +55,13 @@ type RouteConfig struct {
 // SourceConfig holds the type information and configuration settings for a
 // particular image source.
 type SourceConfig struct {
-	Name        string
-	Type        ImageSourceType
-	S3AccessKey string
-	S3Bucket    string
-	S3SecretKey string
-	Directory   string
+	Name               string
+	Type               ImageSourceType
+	S3AccessKey        string
+	S3Bucket           string
+	S3SecretKey        string
+	Directory          string
+	DescendDirectories bool
 }
 
 // ProcessorConfig holds the configuration settings for the image processor.
@@ -157,12 +158,13 @@ func (c *configParser) parseServerConfig() *ServerConfig {
 
 func (c *configParser) parseSourceConfig(sourceName string) *SourceConfig {
 	return &SourceConfig{
-		Name:        sourceName,
-		Type:        ImageSourceType(c.stringForKeypath("sources.%s.type", sourceName)),
-		S3AccessKey: c.stringForKeypath("sources.%s.s3_access_key", sourceName),
-		S3SecretKey: c.stringForKeypath("sources.%s.s3_secret_key", sourceName),
-		S3Bucket:    c.stringForKeypath("sources.%s.s3_bucket", sourceName),
-		Directory:   c.stringForKeypath("sources.%s.directory", sourceName),
+		Name:               sourceName,
+		Type:               ImageSourceType(c.stringForKeypath("sources.%s.type", sourceName)),
+		S3AccessKey:        c.stringForKeypath("sources.%s.s3_access_key", sourceName),
+		S3SecretKey:        c.stringForKeypath("sources.%s.s3_secret_key", sourceName),
+		S3Bucket:           c.stringForKeypath("sources.%s.s3_bucket", sourceName),
+		Directory:          c.stringForKeypath("sources.%s.directory", sourceName),
+		DescendDirectories: c.boolForKeypath("sources.%s.descend_directories", sourceName),
 	}
 }
 
