@@ -61,16 +61,38 @@ func (p *Route) ShouldHandleRequest(r *http.Request) bool {
 // Parses the source and processor options from the request.
 func (p *Route) SourceAndProcessorOptionsForRequest(r *http.Request) (
 	*ImageSourceOptions, *ImageProcessorOptions) {
+	pathArgs := NamedSubexpMap(p.Pattern, r.URL.Path)
 
-	matches := p.Pattern.FindAllStringSubmatch(r.URL.Path, -1)[0]
-	path := matches[p.ImagePathIndex]
+	// Lookup `key` argument in URL.Path first, then form values.
+	// (it could be argued that form values should take precedence.)
+	var pathOrFormValue = func (key string) string {
+		if val, ok := pathArgs[key]; ok {
+			return val
+		}
+		return r.FormValue(key)
+	}
 
-	width, _ := strconv.ParseUint(r.FormValue("w"), 10, 32)
-	height, _ := strconv.ParseUint(r.FormValue("h"), 10, 32)
-	blurRadius, _ := strconv.ParseFloat(r.FormValue("blur"), 64)
+	width, _ := strconv.ParseUint(pathOrFormValue("w"), 10, 32)
+	height, _ := strconv.ParseUint(pathOrFormValue("h"), 10, 32)
+	blurRadius, _ := strconv.ParseFloat(pathOrFormValue("blur"), 64)
 
-	return &ImageSourceOptions{Path: path}, &ImageProcessorOptions{
+	return &ImageSourceOptions{Path: pathArgs["image_path"]}, &ImageProcessorOptions{
 		Dimensions: ImageDimensions{width, height},
 		BlurRadius: blurRadius,
 	}
+}
+
+// Constructs a map of named subexpressions to their matched string values.
+func NamedSubexpMap(re *regexp.Regexp, s string) map[string]string {
+	matches := re.FindAllStringSubmatch(s, -1)[0]
+	names := re.SubexpNames()
+	m := make(map[string]string, len(names))
+	for i, name := range names {
+		// Skip unnamed groups
+		if name == "" {
+			continue
+		}
+		m[name] = matches[i]
+	}
+	return m
 }
