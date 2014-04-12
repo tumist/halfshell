@@ -75,10 +75,12 @@ func (p *Route) SourceAndProcessorOptionsForRequest(r *http.Request) (
 	width, _ := strconv.ParseUint(pathOrFormValue("w"), 10, 32)
 	height, _ := strconv.ParseUint(pathOrFormValue("h"), 10, 32)
 	blurRadius, _ := strconv.ParseFloat(pathOrFormValue("blur"), 64)
+	grayScale, _ := strconv.ParseBool(pathOrFormValue("grayscale"))
 
 	return &ImageSourceOptions{Path: pathArgs["image_path"]}, &ImageProcessorOptions{
 		Dimensions: ImageDimensions{width, height},
 		BlurRadius: blurRadius,
+		GrayScale:  grayScale,
 	}
 }
 
