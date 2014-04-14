@@ -65,7 +65,7 @@ func (p *Route) SourceAndProcessorOptionsForRequest(r *http.Request) (
 
 	// Lookup `key` argument in URL.Path first, then form values.
 	// (it could be argued that form values should take precedence.)
-	var pathOrFormValue = func (key string) string {
+	var pathOrFormValue = func(key string) string {
 		if val, ok := pathArgs[key]; ok {
 			return val
 		}

@@ -14,7 +14,7 @@ Sources are repositories from which an “original” image can be loaded. They 
 
 ### Processors
 
-Processors perform all image manipulation. They accept an image and a set of options and return a modified image. Out of the box, the default processor supports resizing and blurring images. Each processor can be configured with maximum and default image dimensions and enable/disable certain features.
+Processors perform all image manipulation. They accept an image and a set of options and return a modified image. Out of the box, the default processor supports resizing, grayscaling and blurring images. Each processor can be configured with maximum and default image dimensions and enable/disable certain features.
 
 ### Routes
 
@@ -87,7 +87,9 @@ This will start the server on port 8080, and service requests whose path begins 
     http://localhost:8080/users/joe/default.jpg?w=100&h=100
     http://localhost:8080/blog/posts/announcement.jpg?w=600&h=200
 
-The image_host named group in the route pattern match (e.g., `^/users(?P<image_path>/.*)$`) gets extracted as the request path for the source. In this instance, the file “joe/default.jpg” is requested from the “my-company-profile-photos” S3 bucket. The processor resizes the image to a width and height of 100. Since the maintain_aspect_ratio setting is set to true, the image will have a maximum width and height of 100, but may be smaller in one dimension in order to maintain the aspect ratio.
+The image_host named group in the route pattern match (e.g., `^/users(?P<image_path>/.*)$`) gets extracted as the request path for the source. In this instance, the file “joe/default.jpg” is requested from the “my-company-profile-photos” S3 bucket. The processor resizes the image to a width and height of 100. Since the maintaqin_aspect_ratio setting is set to true, the image will have a maximum width and height of 100, but may be smaller in one dimension in order to maintain the aspect ratio.
+
+Image processor parameters may also appear as a named group in the route pattern.
 
 ### Server
 
@@ -104,6 +106,10 @@ The timeout in seconds for reading the initial data from the connection.
 ##### write_timeout
 
 The timeout in seconds for writing the image data backto the connection.
+
+##### statsd_disabled
+
+Halfshell logs request to [StatsD](https://github.com/etsy/statsd) out of the box. Set this option to `true` to disable this feature and avoid statsd related errors in output log.
 
 ### Sources
 
@@ -129,6 +135,10 @@ For the S3 source type, the bucket to request images from.
 ##### directory
 
 For the Filesystem source type, the local directory to request images from.
+
+##### descend_directories
+
+For the Filesystem source type, allow halfshell to open files in subdirectiries of `directory`.
 
 ### Processors
 
@@ -168,6 +178,14 @@ Set a maximum blur radius percentage. A value of `0` disables blurring images.
 For Gaussian blur, the radius used is this value * the image width. This allows
 you to use a blur parameter (from 0-1) which will apply the same proportion of
 blurring to each image size.
+
+##### grayscale_by_default
+
+Grayscale images without explicit grayscale parameter.
+
+#### grayscale_disabled
+
+Do not allow setting the grayscale parameter.
 
 ### Routes
 
