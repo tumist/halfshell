@@ -77,10 +77,19 @@ func (p *Route) SourceAndProcessorOptionsForRequest(r *http.Request) (
 	blurRadius, _ := strconv.ParseFloat(pathOrFormValue("blur"), 64)
 	grayScale, _ := strconv.ParseBool(pathOrFormValue("grayscale"))
 
+	var crop *ImageProcessorCropOption
+	cx, cy := pathOrFormValue("cropx"), pathOrFormValue("cropy")
+	if cx != "" || cy != "" {
+		cropX, _ := strconv.ParseFloat(cx, 64)
+		cropY, _ := strconv.ParseFloat(cy, 64)
+		crop = &ImageProcessorCropOption{cropX, cropY}
+	}
+
 	return &ImageSourceOptions{Path: pathArgs["image_path"]}, &ImageProcessorOptions{
 		Dimensions: ImageDimensions{width, height},
 		BlurRadius: blurRadius,
 		GrayScale:  grayScale,
+		Crop:       crop,
 	}
 }
 
