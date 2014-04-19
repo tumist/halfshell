@@ -87,9 +87,21 @@ This will start the server on port 8080, and service requests whose path begins 
     http://localhost:8080/users/joe/default.jpg?w=100&h=100
     http://localhost:8080/blog/posts/announcement.jpg?w=600&h=200
 
-The image_host named group in the route pattern match (e.g., `^/users(?P<image_path>/.*)$`) gets extracted as the request path for the source. In this instance, the file “joe/default.jpg” is requested from the “my-company-profile-photos” S3 bucket. The processor resizes the image to a width and height of 100. Since the maintaqin_aspect_ratio setting is set to true, the image will have a maximum width and height of 100, but may be smaller in one dimension in order to maintain the aspect ratio.
+The image_path named group in the route pattern match (e.g., `^/users(?P<image_path>/.*)$`) gets extracted as the request path for the source. In this instance, the file “joe/default.jpg” is requested from the “my-company-profile-photos” S3 bucket. The processor resizes the image to a width and height of 100. Since the maintain_aspect_ratio setting is set to true, the image will have a maximum width and height of 100, but may be smaller in one dimension in order to maintain the aspect ratio.
 
-Image processor parameters may also appear as a named group in the route pattern.
+Image processing arguments may also appear as a named group in the route pattern.
+
+```json
+    "routes": {
+        "^/landscapes/(?P<w>(600|800|900))x(?P<h>320)/(?P<image_path>.*)$": {
+            "name": "landscapes",
+            "source": "landscapes",
+            "processor": "default"
+       },
+```
+
+This route serves landscape images that can be 600, 800 or 900 pixels wide and 320 pixels in height. Adding ?w=400 to the request will have no effect.
+
 
 ### Server
 
@@ -105,7 +117,7 @@ The timeout in seconds for reading the initial data from the connection.
 
 ##### write_timeout
 
-The timeout in seconds for writing the image data backto the connection.
+The timeout in seconds for writing the image data back to the connection.
 
 ##### statsd_disabled
 
@@ -138,7 +150,7 @@ For the Filesystem source type, the local directory to request images from.
 
 ##### descend_directories
 
-For the Filesystem source type, allow halfshell to open files in subdirectiries of `directory`.
+For the Filesystem source type, allow halfshell to open files in subdirectories of `directory`.
 
 ### Processors
 
@@ -183,7 +195,7 @@ blurring to each image size.
 
 Grayscale images without explicit grayscale parameter.
 
-#### grayscale_disabled
+##### grayscale_disabled
 
 Do not allow setting the grayscale parameter.
 
